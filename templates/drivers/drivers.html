@@ -1,0 +1,398 @@
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Drivers - SmartDelivery</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            color: #6b7280;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .button:hover {
+            background: #1d4ed8;
+        }
+
+        .secondary-button {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 7px;
+            background: #6b7280;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .secondary-button:hover {
+            background: #4b5563;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .filters input,
+        .filters select {
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            margin-right: 10px;
+            font-size: 15px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f9fafb;
+            font-weight: bold;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #6b7280;
+        }
+
+        .back {
+            display: block;
+            margin-top: 20px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        @media (max-width: 700px) {
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-buttons {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .filters input,
+            .filters select {
+                width: 100%;
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div>
+            <h1>Drivers</h1>
+
+            <div class="subtitle">
+                Manage all delivery drivers from the database.
+            </div>
+        </div>
+
+        <div class="header-buttons">
+
+            {% if user.is_admin_role or user.is_manager_role %}
+
+                <a href="{% url 'create_driver' %}" class="button">
+                    + Add Driver
+                </a>
+
+            {% endif %}
+
+            <a href="{% url 'dashboard' %}" class="secondary-button">
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="filters">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search driver..."
+        >
+
+        <select id="statusFilter">
+
+            <option value="all">
+                All Status
+            </option>
+
+            <option value="active">
+                Active
+            </option>
+
+            <option value="inactive">
+                Inactive
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Vehicle</th>
+                    <th>Plate</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="driversTable">
+
+                {% for driver in drivers %}
+
+                    <tr
+                        class="driver-row"
+                        data-name="{{ driver.username|lower }} {{ driver.first_name|lower }} {{ driver.last_name|lower }}"
+                        data-status="{% if driver.driver_profile.is_active %}active{% else %}inactive{% endif %}"
+                    >
+
+                        <td>
+                            {{ driver.username }}
+                        </td>
+
+                        <td>
+                            {{ driver.first_name }} {{ driver.last_name }}
+                        </td>
+
+                        <td>
+                            {{ driver.email|default:"-" }}
+                        </td>
+
+                        <td>
+                            {{ driver.phone|default:"-" }}
+                        </td>
+
+                        <td>
+                            {{ driver.driver_profile.vehicle_type|default:"-" }}
+                        </td>
+
+                        <td>
+                            {{ driver.driver_profile.vehicle_plate|default:"-" }}
+                        </td>
+
+                        <td>
+
+                            {% if driver.driver_profile.is_active %}
+
+                                <span class="status active">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="status inactive">
+                                    Inactive
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="7" class="empty">
+                            No drivers found.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <a href="{% url 'dashboard' %}" class="back">
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+
+<script>
+
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const rows = document.querySelectorAll(".driver-row");
+
+
+    function filterDrivers() {
+
+        const searchValue =
+            searchInput.value.toLowerCase().trim();
+
+        const statusValue =
+            statusFilter.value;
+
+
+        rows.forEach(function(row) {
+
+            const name = row.dataset.name;
+            const status = row.dataset.status;
+
+
+            const matchesSearch =
+                name.includes(searchValue);
+
+            const matchesStatus =
+                statusValue === "all" ||
+                status === statusValue;
+
+
+            if (matchesSearch && matchesStatus) {
+
+                row.style.display = "";
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+    }
+
+
+    searchInput.addEventListener(
+        "input",
+        filterDrivers
+    );
+
+    statusFilter.addEventListener(
+        "change",
+        filterDrivers
+    );
+
+</script>
+
+</body>
+
+</html>

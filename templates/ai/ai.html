@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}AI Assistant - Smart Delivery{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+    <div>
+        <h1>AI Assistant</h1>
+        <p>Get intelligent assistance for your delivery operations.</p>
+    </div>
+
+</div>
+
+
+<div
+    class="ai-container"
+    id="aiAssistant"
+    data-user-role="{{ user.effective_role }}"
+    data-page="AI Assistant"
+>
+
+    <div class="ai-header">
+
+        <div class="ai-icon">🤖</div>
+
+        <div>
+            <h2>Smart Delivery AI</h2>
+            <p>How can I help you today?</p>
+        </div>
+
+    </div>
+
+
+    <div class="chat-box">
+
+        <div class="chat-message ai-message">
+
+            <div class="message-icon">🤖</div>
+
+            <div class="message-content">
+                <strong>AI Assistant</strong>
+
+                <p>
+                    Hello! I can help you with deliveries, drivers,
+                    and logistics operations.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="chat-message user-message">
+
+            <div class="message-content">
+
+                <strong>You</strong>
+
+                <p>
+                    How many active deliveries do we have?
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="chat-message ai-message">
+
+            <div class="message-icon">🤖</div>
+
+            <div class="message-content">
+
+                <strong>AI Assistant</strong>
+
+                <p>
+                    You currently have 36 active deliveries.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="chat-input">
+
+        <input
+            type="text"
+            placeholder="Ask the AI Assistant..."
+        >
+
+        <button class="primary-btn">
+            Send
+        </button>
+
+    </div>
+
+</div>
+
+
+<script src="{% static 'js/ai.js' %}?v=4"></script>
+
+{% endblock %}

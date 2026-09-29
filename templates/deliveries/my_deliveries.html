@@ -1,0 +1,114 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Deliveries - Smart Delivery{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+    <div>
+        <h1>My Deliveries</h1>
+        <p>Track and manage your delivery orders.</p>
+    </div>
+
+    <a href="{% url 'create_delivery' %}" class="primary-btn">
+        + New Delivery
+    </a>
+
+</div>
+
+
+<div class="table-card">
+
+    <div class="table-header">
+        <h2>My Orders</h2>
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Order ID</th>
+                    <th>Package</th>
+                    <th>Pickup</th>
+                    <th>Destination</th>
+                    <th>Driver</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for delivery in deliveries %}
+
+                <tr>
+
+                    <td>
+                        #ORD-{{ delivery.id }}
+                    </td>
+
+                    <td>
+                        {{ delivery.package_description }}
+                    </td>
+
+                    <td>
+                        {{ delivery.pickup_address }}
+                    </td>
+
+                    <td>
+                        {{ delivery.destination_address }}
+                    </td>
+
+                    <td>
+
+                        {% with assignment=delivery.current_assignment %}
+
+                            {% if assignment %}
+                                {{ assignment.driver }}
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        {% endwith %}
+
+                    </td>
+
+                    <td>
+                        {{ delivery.get_status_display }}
+                    </td>
+
+                    <td>
+                        {{ delivery.created_at|date:"d M Y" }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="7" style="text-align: center;">
+                        You don't have any deliveries yet.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

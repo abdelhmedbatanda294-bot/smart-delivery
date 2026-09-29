@@ -1,0 +1,176 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}My Assigned Deliveries - Smart Delivery{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+    <div>
+        <h1>My Assigned Deliveries</h1>
+        <p>Manage deliveries assigned to you.</p>
+    </div>
+
+</div>
+
+
+<div class="table-card">
+
+    <div class="table-header">
+        <h2>Assigned Deliveries</h2>
+    </div>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Package</th>
+                    <th>Pickup</th>
+                    <th>Destination</th>
+                    <th>Status</th>
+                    <th>Update</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for delivery in deliveries %}
+
+                <tr>
+
+                    <td>
+                        #ORD-{{ delivery.id }}
+                    </td>
+
+                    <td>
+                        {% if delivery.customer.user.get_full_name %}
+                            {{ delivery.customer.user.get_full_name }}
+                        {% else %}
+                            {{ delivery.customer.user.username }}
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ delivery.package_description }}
+                    </td>
+
+                    <td>
+                        {{ delivery.pickup_address }}
+                    </td>
+
+                    <td>
+                        {{ delivery.destination_address }}
+                    </td>
+
+                    <td>
+                        {{ delivery.get_status_display }}
+                    </td>
+
+                    <td>
+
+                        {% if delivery.status == "assigned" %}
+
+                            <form
+                                method="post"
+                                action="{% url 'update_delivery_status' delivery.id %}"
+                            >
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="status"
+                                    value="picked_up"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="primary-btn"
+                                >
+                                    Pick Up
+                                </button>
+                            </form>
+
+                        {% elif delivery.status == "picked_up" %}
+
+                            <form
+                                method="post"
+                                action="{% url 'update_delivery_status' delivery.id %}"
+                            >
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="status"
+                                    value="in_transit"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="primary-btn"
+                                >
+                                    Start Delivery
+                                </button>
+                            </form>
+
+                        {% elif delivery.status == "in_transit" %}
+
+                            <form
+                                method="post"
+                                action="{% url 'update_delivery_status' delivery.id %}"
+                            >
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="status"
+                                    value="delivered"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="primary-btn"
+                                >
+                                    Mark Delivered
+                                </button>
+                            </form>
+
+                        {% elif delivery.status == "delivered" %}
+
+                            <span>Completed</span>
+
+                        {% else %}
+
+                            <span>Waiting for assignment</span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="7" style="text-align:center;">
+                        No deliveries are currently assigned to you.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
+```
+

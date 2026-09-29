@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Smart Delivery{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+    <div>
+        <h1>Dashboard</h1>
+        <p>Welcome back! Here's what's happening today.</p>
+    </div>
+
+    {% if user.is_admin_role or user.is_manager_role or user.is_customer_role %}
+
+        <a href="{% url 'create_delivery' %}" class="primary-btn">
+            + New Delivery
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-icon">📦</div>
+
+        <div>
+            <p>Total Orders</p>
+            <h2>{{ total_deliveries }}</h2>
+            <span>All deliveries</span>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">🚚</div>
+
+        <div>
+            <p>Active Deliveries</p>
+            <h2>{{ active_deliveries }}</h2>
+            <span>Currently active</span>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">⏳</div>
+
+        <div>
+            <p>Pending Deliveries</p>
+            <h2>{{ pending_deliveries }}</h2>
+            <span>Waiting to be processed</span>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">✅</div>
+
+        <div>
+            <p>Delivered</p>
+            <h2>{{ delivered_deliveries }}</h2>
+            <span>Successfully delivered</span>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <h2>Recent Deliveries</h2>
+
+        {% if user.is_admin_role or user.is_manager_role %}
+
+            <a href="{% url 'deliveries' %}">
+                View All
+            </a>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Driver</th>
+                    <th>Status</th>
+                    <th>Package</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for delivery in recent_deliveries %}
+
+                    <tr>
+
+                        <td>
+                            #ORD-{{ delivery.id }}
+                        </td>
+
+
+                        <td>
+
+                            {% if delivery.customer.user.get_full_name %}
+                                {{ delivery.customer.user.get_full_name }}
+                            {% else %}
+                                {{ delivery.customer.user.username }}
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% with assignment=delivery.current_assignment %}
+
+                                {% if assignment %}
+                                    {{ assignment.driver }}
+                                {% else %}
+                                    -
+                                {% endif %}
+
+                            {% endwith %}
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="status">
+
+                                {{ delivery.get_status_display }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ delivery.package_description }}
+
+                        </td>
+
+                    </tr>
+
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="5" style="text-align: center;">
+                            No deliveries found.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+{% endblock %}

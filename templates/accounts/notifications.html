@@ -1,0 +1,120 @@
+
+{% extends "base.html" %}
+
+{% block title %}Notifications - Smart Delivery{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+    <div>
+        <h1>Notifications</h1>
+        <p>Stay updated about your deliveries.</p>
+    </div>
+
+</div>
+
+
+<div class="table-card">
+
+    <div class="table-header">
+
+        <h2>My Notifications</h2>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for notification in notifications %}
+
+                <tr>
+
+                    <td>
+                        {{ notification.message }}
+                    </td>
+
+                    <td>
+
+                        {% if notification.is_read %}
+                            Read
+                        {% else %}
+                            <strong>New</strong>
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+                        {{ notification.created_at|date:"d M Y H:i" }}
+                    </td>
+
+                    <td>
+
+                        {% if not notification.is_read %}
+
+                            <form
+                                method="post"
+                                action="{% url 'authentication:notification_read' notification.id %}"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="secondary-btn"
+                                >
+                                    Mark as Read
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        style="text-align: center;"
+                    >
+                        No notifications yet.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

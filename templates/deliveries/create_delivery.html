@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}New Delivery - Smart Delivery{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header">
+
+    <div>
+        <h1>New Delivery</h1>
+        <p>Create a new delivery order.</p>
+    </div>
+
+    <a href="{% url 'deliveries' %}" class="secondary-btn">
+        ← Back to Deliveries
+    </a>
+
+</div>
+
+
+<div class="form-card">
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <div class="form-actions">
+
+            <button type="submit" class="primary-btn">
+                Create Delivery
+            </button>
+
+            <a href="{% url 'deliveries' %}" class="secondary-btn">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

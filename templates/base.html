@@ -1,0 +1,380 @@
+
+{% load static %}
+{% load i18n %}
+
+{% get_current_language as CURRENT_LANGUAGE %}
+
+<!DOCTYPE html>
+
+<html
+    lang="{{ CURRENT_LANGUAGE }}"
+    dir="{% if CURRENT_LANGUAGE == 'ar' %}rtl{% else %}ltr{% endif %}"
+>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            {% trans "Smart Delivery" %}
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}"
+    >
+
+    <style>
+
+        .language-switcher {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0 15px;
+        }
+
+        .language-switcher form {
+            margin: 0;
+        }
+
+        .language-switcher button {
+            border: none;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 9px;
+            border-radius: 6px;
+        }
+
+        .language-switcher button:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+        }
+
+        .language-switcher button.active-language {
+            background: #2563eb;
+            color: white;
+        }
+
+        html[dir="rtl"] {
+            direction: rtl;
+        }
+
+        html[dir="ltr"] {
+            direction: ltr;
+        }
+
+        html[dir="rtl"] .nav-user {
+            margin-left: 0;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+
+    <!-- Logo -->
+
+    <div class="logo">
+        Smart<span>Delivery</span>
+    </div>
+
+
+    <!-- Navigation -->
+
+    <nav class="nav-links">
+
+
+        <!-- Dashboard -->
+
+        <a
+            href="{% url 'dashboard' %}"
+            class="{% if request.path == '/' %}active{% endif %}"
+        >
+            {% trans "Dashboard" %}
+        </a>
+
+
+        <!-- My Deliveries - Customer Only -->
+
+        {% if user.is_customer_role %}
+
+            <a
+                href="{% url 'my_deliveries' %}"
+                class="{% if request.path == '/my-deliveries/' %}active{% endif %}"
+            >
+                {% trans "My Deliveries" %}
+            </a>
+
+        {% endif %}
+
+
+        <!-- My Assigned Deliveries - Driver Only -->
+
+        {% if user.is_driver_role %}
+
+            <a
+                href="{% url 'driver_deliveries' %}"
+                class="{% if request.path == '/driver-deliveries/' %}active{% endif %}"
+            >
+                {% trans "My Deliveries" %}
+            </a>
+
+        {% endif %}
+
+
+        <!-- New Delivery -->
+
+        {% if user.is_admin_role or user.is_manager_role or user.is_customer_role %}
+
+            <a
+                href="{% url 'create_delivery' %}"
+                class="{% if request.path == '/deliveries/create/' %}active{% endif %}"
+            >
+                {% trans "New Delivery" %}
+            </a>
+
+        {% endif %}
+
+
+        <!-- Deliveries -->
+
+        {% if user.is_admin_role or user.is_manager_role %}
+
+            <a
+                href="{% url 'deliveries' %}"
+                class="{% if request.path == '/deliveries/' %}active{% endif %}"
+            >
+                {% trans "Deliveries" %}
+            </a>
+
+        {% endif %}
+
+
+        <!-- Drivers -->
+
+        {% if user.is_admin_role or user.is_manager_role %}
+
+            <a
+                href="{% url 'drivers' %}"
+                class="{% if request.path == '/drivers/' %}active{% endif %}"
+            >
+                {% trans "Drivers" %}
+            </a>
+
+        {% endif %}
+
+
+        <!-- AI Assistant -->
+
+        <a
+            href="{% url 'ai_assistant' %}"
+            class="{% if request.path == '/ai/' %}active{% endif %}"
+        >
+            {% trans "AI Assistant" %}
+        </a>
+
+
+        <!-- Notifications -->
+
+        <a
+            href="{% url 'authentication:notifications' %}"
+            class="{% if request.path == '/auth/notifications/' %}active{% endif %}"
+        >
+            {% trans "Notifications" %}
+        </a>
+
+    </nav>
+
+
+    <!-- User Area -->
+
+    <div class="nav-user">
+
+
+        <span>
+
+            {% if request.user.is_authenticated %}
+
+                {{ request.user.first_name|default:request.user.username }}
+
+            {% else %}
+
+                Admin
+
+            {% endif %}
+
+        </span>
+
+
+        <!-- Language Switcher -->
+
+        <div class="language-switcher">
+
+
+            <!-- English -->
+
+            <form
+                action="{% url 'set_language' %}"
+                method="post"
+            >
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="next"
+                    value="{{ request.get_full_path }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="language"
+                    value="en"
+                >
+
+                <button
+                    type="submit"
+                    class="{% if CURRENT_LANGUAGE == 'en' %}active-language{% endif %}"
+                >
+                    English
+                </button>
+
+            </form>
+
+
+            <!-- Arabic -->
+
+            <form
+                action="{% url 'set_language' %}"
+                method="post"
+            >
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="next"
+                    value="{{ request.get_full_path }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="language"
+                    value="ar"
+                >
+
+                <button
+                    type="submit"
+                    class="{% if CURRENT_LANGUAGE == 'ar' %}active-language{% endif %}"
+                >
+                    العربية
+                </button>
+
+            </form>
+
+
+        </div>
+
+
+        <!-- Logout -->
+
+        <form
+            action="{% url 'authentication:logout' %}"
+            method="post"
+            id="logoutForm"
+            style="display: inline;"
+        >
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                id="logoutBtn"
+            >
+                {% trans "Logout" %}
+            </button>
+
+        </form>
+
+
+    </div>
+
+</header>
+
+
+<main class="main-content">
+
+    {% block content %}
+    {% endblock %}
+
+</main>
+
+
+<footer class="footer">
+
+    <p>
+        {% trans "© 2026 Smart Delivery & Logistics Management System" %}
+    </p>
+
+</footer>
+
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const logoutForm =
+                document.getElementById("logoutForm");
+
+
+            if (!logoutForm) {
+                return;
+            }
+
+
+            logoutForm.addEventListener(
+                "submit",
+                function (event) {
+
+                    const confirmed = confirm(
+                        "{% trans 'Are you sure you want to logout?' %}"
+                    );
+
+
+                    if (!confirmed) {
+
+                        event.preventDefault();
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>
+

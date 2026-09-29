@@ -1,0 +1,275 @@
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% trans "Add User" %} - SmartDelivery</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .help {
+            margin-top: 5px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #1d4ed8;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .section-title {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>{% trans "Add User" %}</h1>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">
+                    {% trans "Username" %}
+                </label>
+
+                {{ form.username }}
+
+                {% for error in form.username.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.first_name.id_for_label }}">
+                    {% trans "First Name" %}
+                </label>
+
+                {{ form.first_name }}
+
+                {% for error in form.first_name.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.last_name.id_for_label }}">
+                    {% trans "Last Name" %}
+                </label>
+
+                {{ form.last_name }}
+
+                {% for error in form.last_name.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">
+                    {% trans "Email" %}
+                </label>
+
+                {{ form.email }}
+
+                {% for error in form.email.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.phone.id_for_label }}">
+                    {% trans "Phone" %}
+                </label>
+
+                {{ form.phone }}
+
+                {% for error in form.phone.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.role.id_for_label }}">
+                    {% trans "Role" %}
+                </label>
+
+                {{ form.role }}
+
+                {% for error in form.role.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="section-title">
+                {% trans "Password" %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">
+                    {% trans "Password" %}
+                </label>
+
+                {{ form.password1 }}
+
+                {% for error in form.password1.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">
+                    {% trans "Password Confirmation" %}
+                </label>
+
+                {{ form.password2 }}
+
+                {% for error in form.password2.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="section-title">
+                {% trans "Driver Information" %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.vehicle_type.id_for_label }}">
+                    {% trans "Vehicle Type" %}
+                </label>
+
+                {{ form.vehicle_type }}
+
+                {% for error in form.vehicle_type.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.vehicle_plate.id_for_label }}">
+                    {% trans "Vehicle Plate" %}
+                </label>
+
+                {{ form.vehicle_plate }}
+
+                {% for error in form.vehicle_plate.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="button">
+                {% trans "Create User" %}
+            </button>
+
+        </form>
+
+        <a href="{% url 'authentication:user_list' %}" class="back">
+            {% trans "Back to Users" %}
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

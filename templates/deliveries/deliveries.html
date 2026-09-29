@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Deliveries - Smart Delivery{% endblock %}
+
+{% block content %}
+
+<style>
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        white-space: nowrap;
+    }
+
+    .action-buttons .secondary-btn {
+        display: inline-block;
+        margin: 0;
+    }
+</style>
+
+<div class="dashboard-header">
+
+
+<div>
+    <h1>Deliveries</h1>
+    <p>Manage all delivery orders from here.</p>
+</div>
+
+{% if user.is_admin_role or user.is_manager_role or user.is_customer_role %}
+    <a href="{% url 'create_delivery' %}" class="primary-btn">
+        + New Delivery
+    </a>
+{% endif %}
+
+
+</div>
+
+<div class="table-card">
+
+<div class="table-header">
+
+    <h2>All Deliveries</h2>
+
+    <form method="get">
+
+        <select name="status" onchange="this.form.submit()">
+
+            <option value="">
+                All Statuses
+            </option>
+
+            <option value="pending"
+                {% if selected_status == "pending" %}selected{% endif %}>
+                Pending
+            </option>
+
+            <option value="assigned"
+                {% if selected_status == "assigned" %}selected{% endif %}>
+                Assigned
+            </option>
+
+            <option value="picked_up"
+                {% if selected_status == "picked_up" %}selected{% endif %}>
+                Picked Up
+            </option>
+
+            <option value="in_transit"
+                {% if selected_status == "in_transit" %}selected{% endif %}>
+                In Transit
+            </option>
+
+            <option value="delivered"
+                {% if selected_status == "delivered" %}selected{% endif %}>
+                Delivered
+            </option>
+
+        </select>
+
+    </form>
+
+</div>
+
+
+<div class="table-wrapper">
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Package</th>
+                <th>Pickup</th>
+                <th>Destination</th>
+                <th>Driver</th>
+                <th>Status</th>
+                <th>Weight</th>
+                <th>Assign Driver</th>
+                <th>Actions</th>
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for delivery in deliveries %}
+
+            <tr>
+
+                <td>
+                    #ORD-{{ delivery.id }}
+                </td>
+
+
+                <td>
+                    {% if delivery.customer.user.get_full_name %}
+                        {{ delivery.customer.user.get_full_name }}
+                    {% else %}
+                        {{ delivery.customer.user.username }}
+                    {% endif %}
+                </td>
+
+
+                <td>
+                    {{ delivery.package_description }}
+                </td>
+
+
+                <td>
+                    {{ delivery.pickup_address }}
+                </td>
+
+
+                <td>
+                    {{ delivery.destination_address }}
+                </td>
+
+
+                <td>
+
+                    {% with assignment=delivery.current_assignment %}
+
+                        {% if assignment %}
+                            {{ assignment.driver }}
+                        {% else %}
+                            <span>Not Assigned</span>
+                        {% endif %}
+
+                    {% endwith %}
+
+                </td>
+
+
+                <td>
+                    {{ delivery.get_status_display }}
+                </td>
+
+
+                <td>
+
+                    {% if delivery.weight_kg %}
+                        {{ delivery.weight_kg }} kg
+                    {% else %}
+                        -
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+
+                    {% if user.is_admin_role or user.is_manager_role %}
+
+                        <form
+                            method="post"
+                            action="{% url 'assign_delivery' delivery.id %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <select
+                                name="driver"
+                                class="input"
+                                required
+                            >
+
+                                <option value="">
+                                    Select Driver
+                                </option>
+
+                                {% for driver in available_drivers %}
+
+                                    <option value="{{ driver.id }}">
+
+                                        {% if driver.user.get_full_name %}
+                                            {{ driver.user.get_full_name }}
+                                        {% else %}
+                                            {{ driver.user.username }}
+                                        {% endif %}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+
+                            <input
+                                type="text"
+                                name="note"
+                                class="input"
+                                placeholder="Optional note"
+                            >
+
+
+                            <button
+                                type="submit"
+                                class="primary-btn"
+                            >
+                                Assign
+                            </button>
+
+                        </form>
+
+                    {% else %}
+
+                        -
+
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+
+                    {% if user.is_admin_role or user.is_manager_role %}
+
+                        <div class="action-buttons">
+
+                            <a
+                                href="{% url 'edit_delivery' delivery.id %}"
+                                class="secondary-btn"
+                            >
+                                Edit
+                            </a>
+
+                            <a
+                                href="{% url 'delete_delivery' delivery.id %}"
+                                class="secondary-btn"
+                            >
+                                Delete
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+
+            {% empty %}
+
+            <tr>
+
+                <td
+                    colspan="10"
+                    style="text-align: center;"
+                >
+                    No deliveries found.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+</div>
+
+{% endblock %}
